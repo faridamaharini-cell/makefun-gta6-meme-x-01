@@ -67,36 +67,57 @@ def ghost_shape(cx, top, width, height):
 
 
 def draw_ghost(d, cx, top, width, height):
-    """Canonical make.fun ghost: white body, thick black outline, two
-    black four-pointed sparkle eyes, one round little hand, magenta
-    coin with a white star."""
+    """Canonical make.fun ghost, menacing version: white body, thick
+    black outline, hollow dark eye sockets with glowing red pupils,
+    angled brows, a wide jagged grin full of sharp teeth, dark
+    shadows under the eyes, magenta coin clutched at its side."""
     black = (20, 12, 20)
     # black underlay = outline
     d.polygon(ghost_shape(cx, top - 4, width + 14, height + 10), fill=black)
     d.polygon(ghost_shape(cx, top, width, height), fill=(255, 255, 255))
-    # sparkle eyes
+    # scary face: hollow dark sockets, glowing red eyes
     eye_y = top + height * 0.34
     eye_dx = width * 0.20
     eye_r = width * 0.075
     for ex in (cx - eye_dx, cx + eye_dx):
-        d.polygon(sparkle_points(ex, eye_y, eye_r), fill=black)
-    # smug grin: wide smile under the eyes — "yeah, I did it"
-    d.arc([cx - width * 0.16, eye_y + height * 0.16,
-           cx + width * 0.16, eye_y + height * 0.42],
-          start=15, end=165, fill=black, width=8)
-    # one raised eyebrow over the left eye, inner end up: sceptical smug
-    d.line([(cx - eye_dx - width * 0.11, eye_y - eye_r - height * 0.10),
-            (cx - eye_dx + width * 0.11, eye_y - eye_r - height * 0.16)],
-           fill=black, width=9)
-    # both little hands up in a shrug: "what, me?"
-    hy, hr = top + height * 0.58, width * 0.10
-    for hx in (cx - width * 0.55, cx + width * 0.55):
-        d.ellipse([hx - hr - 5, hy - hr - 5, hx + hr + 5, hy + hr + 5], fill=black)
-        d.ellipse([hx - hr, hy - hr, hx + hr, hy + hr], fill=(255, 255, 255))
-    # magenta coin with white star, held by the raised right hand
+        # dark shadow smudge under the eye
+        d.ellipse([ex - eye_r * 1.5, eye_y + eye_r * 0.4,
+                   ex + eye_r * 1.5, eye_y + eye_r * 1.9], fill=(96, 96, 96))
+        # hollow black socket, taller than wide
+        d.ellipse([ex - eye_r, eye_y - eye_r * 1.5,
+                   ex + eye_r, eye_y + eye_r * 1.5], fill=black)
+        # glowing red pupil
+        pr = eye_r * 0.45
+        d.ellipse([ex - pr, eye_y - pr, ex + pr, eye_y + pr], fill=(255, 30, 30))
+        d.ellipse([ex - pr * 0.45, eye_y - pr * 0.45,
+                   ex + pr * 0.45, eye_y + pr * 0.45], fill=(255, 130, 130))
+    # angled brows slanting down toward the centre: menacing
+    for sgn in (-1, 1):
+        ex = cx + sgn * eye_dx
+        d.line([(ex - sgn * eye_r * 1.3, eye_y - eye_r * 2.1),
+                (ex + sgn * eye_r * 1.3, eye_y - eye_r * 1.5)],
+               fill=black, width=9)
+    # sinister grin: wide black mouth with jagged top and bottom edges
+    # so the white body shows through as sharp teeth
+    my0 = eye_y + height * 0.16
+    my1 = eye_y + height * 0.42
+    mx0, mx1 = cx - width * 0.17, cx + width * 0.17
+    pts = []
+    n = 6
+    for i in range(n + 1):
+        x = mx0 + (mx1 - mx0) * i / n
+        y = my0 + height * 0.02 if i % 2 == 0 else my0 + height * 0.09
+        pts.append((x, y))
+    for i in range(n, -1, -1):
+        x = mx0 + (mx1 - mx0) * i / n
+        y = my1 - height * 0.02 if i % 2 == 0 else my1 - height * 0.09
+        pts.append((x, y))
+    d.polygon(pts, fill=black)
+    # no more shrug — the coin is clutched at its side instead
+    hy = top + height * 0.72
     hx = cx + width * 0.55
     cr = width * 0.16
-    ccx, ccy = hx + width * 0.12, hy + width * 0.04
+    ccx, ccy = hx + width * 0.10, hy
     d.ellipse([ccx - cr - 5, ccy - cr - 5, ccx + cr + 5, ccy + cr + 5], fill=black)
     d.ellipse([ccx - cr, ccy - cr, ccx + cr, ccy + cr], fill=(226, 0, 122))
     d.polygon(star_points(ccx, ccy, cr * 0.72, cr * 0.30), fill=(255, 255, 255))
@@ -174,6 +195,12 @@ def main():
     y = 218
     y = centered(d, y, "WANTED", font(SERIF, 96), ink)
     d.line([(px0 + 90, y + 8), (px1 - 90, y + 8)], fill=ink, width=4)
+    # dark red aura behind the ghost: concentric ellipses, kept clear
+    # of the WANTED rule above and the title text below
+    for rx, ry, col in ((200, 140, (140, 25, 35)),
+                        (175, 122, (168, 30, 42)),
+                        (150, 105, (196, 38, 50))):
+        d.ellipse([512 - rx, 488 - ry, 512 + rx, 488 + ry], fill=col)
     # ghost mugshot
     draw_ghost(d, 512, 338, 285, 300)
     y = 632
