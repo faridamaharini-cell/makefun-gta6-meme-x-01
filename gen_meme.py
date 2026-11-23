@@ -80,13 +80,23 @@ def draw_ghost(d, cx, top, width, height):
     eye_r = width * 0.075
     for ex in (cx - eye_dx, cx + eye_dx):
         d.polygon(sparkle_points(ex, eye_y, eye_r), fill=black)
-    # little hand: white circle with black outline, right side
-    hx, hy, hr = cx + width * 0.52, top + height * 0.62, width * 0.10
-    d.ellipse([hx - hr - 5, hy - hr - 5, hx + hr + 5, hy + hr + 5], fill=black)
-    d.ellipse([hx - hr, hy - hr, hx + hr, hy + hr], fill=(255, 255, 255))
-    # magenta coin with white star, held by the hand
+    # smug grin: wide smile under the eyes — "yeah, I did it"
+    d.arc([cx - width * 0.16, eye_y + height * 0.16,
+           cx + width * 0.16, eye_y + height * 0.42],
+          start=15, end=165, fill=black, width=8)
+    # one raised eyebrow over the left eye, inner end up: sceptical smug
+    d.line([(cx - eye_dx - width * 0.11, eye_y - eye_r - height * 0.10),
+            (cx - eye_dx + width * 0.11, eye_y - eye_r - height * 0.16)],
+           fill=black, width=9)
+    # both little hands up in a shrug: "what, me?"
+    hy, hr = top + height * 0.58, width * 0.10
+    for hx in (cx - width * 0.55, cx + width * 0.55):
+        d.ellipse([hx - hr - 5, hy - hr - 5, hx + hr + 5, hy + hr + 5], fill=black)
+        d.ellipse([hx - hr, hy - hr, hx + hr, hy + hr], fill=(255, 255, 255))
+    # magenta coin with white star, held by the raised right hand
+    hx = cx + width * 0.55
     cr = width * 0.16
-    ccx, ccy = hx + width * 0.20, hy + width * 0.16
+    ccx, ccy = hx + width * 0.12, hy + width * 0.04
     d.ellipse([ccx - cr - 5, ccy - cr - 5, ccx + cr + 5, ccy + cr + 5], fill=black)
     d.ellipse([ccx - cr, ccy - cr, ccx + cr, ccy + cr], fill=(226, 0, 122))
     d.polygon(star_points(ccx, ccy, cr * 0.72, cr * 0.30), fill=(255, 255, 255))
